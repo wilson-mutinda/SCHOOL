@@ -135,4 +135,85 @@ module SearchHelper
     target_param
   end
 
+  def search_unique_subject(subjects, name_param)
+    name_param = name_param.to_s.downcase
+
+    first_index = 0;
+    last_index = subjects.length - 1;
+
+    while first_index <= last_index
+      mid_index = (first_index + last_index) / 2;
+      mid_subject = subjects[mid_index]
+
+      if mid_subject.name.downcase == name_param
+        return { errors: 'Subject already exists!'}
+      elsif mid_subject.name.downcase < name_param
+        first_index = mid_index + 1;
+      else
+        last_index = mid_index - 1;
+      end
+    end
+
+    name_param.capitalize
+  end
+
+  def search_subject_slug(subjects, slug)
+    slug_str = slug.to_s
+
+    # check if slug was a slug
+    if slug_str.match?(/\A\d+\z/)
+      slug_int = slug_str.to_i
+
+      first_index = 0;
+      last_index = subjects.length - 1;
+
+      while first_index <= last_index
+        mid_index = (first_index + last_index) / 2;
+        mid_subject = subjects[mid_index]
+
+        if mid_subject.id == slug_int
+          return mid_subject 
+        elsif mid_subject.id < slug_int
+          first_index = mid_index + 1
+        else
+          last_index = mid_index - 1
+        end
+      end
+
+      return { errors: "Subject not found for ID #{slug_int}"}
+    end
+
+    # search by name/slug
+    subject = subjects.find { |s| (s.name.downcase == slug_str.to_s.downcase) || (s.slug.downcase == slug_str.to_s.downcase) }
+    unless subject
+      return { errors: "Subject not found for ##{slug_str}"}
+    end
+    return subject
+  end
+
+  def search_unique_subject_name(subjects, name, current_id)
+    name = name.to_s.downcase
+
+    first_index = 0;
+    last_index = subjects.length - 1;
+
+    while first_index <= last_index
+      mid_index = (first_index + last_index) / 2;
+      mid_subject = subjects[mid_index]
+
+      if mid_subject.name.downcase == name
+        if mid_subject.id != current_id
+          return { errors: "Name already exists!" }
+        end
+        return name.capitalize
+      elsif mid_subject.name.downcase < name
+        first_index = mid_index + 1;
+      else
+        last_index = mid_index - 1;
+      end
+    end
+
+    return name.capitalize
+  end
+
 end

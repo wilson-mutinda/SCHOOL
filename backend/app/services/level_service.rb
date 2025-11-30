@@ -110,7 +110,7 @@ class LevelService
 
   # restore_level
   def restore_level
-    level = Level.find { |l| l.slug == @target_param }
+    level = Level.all.unscoped.find { |l| l.slug == @target_param }
     if level
       if !level.level_deleted?
         return { success: false, errors: 'Level was not deleted!'}

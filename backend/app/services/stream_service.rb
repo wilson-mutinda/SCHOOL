@@ -95,7 +95,7 @@ class StreamService
 
   # restore_stream
   def restore_stream
-    stream = Stream.find { |s| s.slug == @target_param }
+    stream = Stream.all.unscoped.find { |s| s.slug == @target_param }
     if stream
       if !stream.soft_deleted?
         { success: false, errors: 'Stream was not deleted!'}

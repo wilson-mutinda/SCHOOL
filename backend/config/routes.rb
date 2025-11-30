@@ -17,6 +17,14 @@ Rails.application.routes.draw do
       patch 'update_level/:slug', to: 'levels#update_level'
       delete 'delete_level/:slug', to: 'levels#delete_level'
       get 'restore_level/:slug', to: 'levels#restore_level'
+
+      # subjects
+      post 'create_subject', to: 'subjects#create_subject'
+      get 'single_subject/:slug', to: 'subjects#single_subject'
+      get 'all_subjects', to: 'subjects#all_subjects'
+      patch 'update_subject/:slug', to: 'subjects#update_subject'
+      delete 'delete_subject/:slug', to: 'subjects#delete_subject'
+      get 'restore_subject/:slug', to: 'subjects#restore_subject'
     end
   end
 end
