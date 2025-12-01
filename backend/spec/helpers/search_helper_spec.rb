@@ -194,4 +194,82 @@ RSpec.describe SearchHelper, type: :helper do
         expect(result).to eq('Bb')
       end
     end
+
+    describe "#unique_email_search" do
+      let(:users) do
+        [
+          double(id: 1, email: "aa@gmail.com"),
+          double(id: 2, email: "bb@gmail.com"),
+          double(id: 3, email: "cc@gmail.com")
+        ]
+      end
+
+      it "returns an error if email already exists" do
+        result = helper.unique_email_search(users, 'aa@gmail.com')
+        expect(result).to eq({ errors: "User with this email already exists!"})
+      end
+
+      it "returns email if it does not exist on the list" do
+        result = helper.unique_email_search(users, 'dd@gmail.com')
+        expect(result).to eq('dd@gmail.com')
+      end
+    end
+
+    describe "#search_user_by_slug" do
+      let(:users) do
+        [
+          double(id: 1, email: 'aa@gmail.com', phone: '254791738418'),
+          double(id: 2, email: "bb@gmail.com", phone: '254748929891')
+        ]
+      end
+
+      it "returns an error if id is not found" do
+        result = helper.search_user_by_slug(users, 5)
+        expect(result).to eq({ errors: "User with ID 5 does not exist!"})
+      end
+
+      it "returns an object if id was found" do
+        result = helper.search_user_by_slug(users, 2)
+        expect(result).to eq(users[1])
+      end
+
+      it "returns an error if email was not found" do
+        result = helper.search_user_by_slug(users, 'bc@gmail.com')
+        expect(result).to eq({ errors: "User not found with slug #bc@gmail.com"})
+      end
+
+      it "returns a user object if email slug was found" do
+        result = helper.search_user_by_slug(users, 'bb@gmail.com')
+        expect(result).to eq(users[1])
+      end
+
+      it "returns an error if phone was not found" do
+        result = helper.search_user_by_slug(users, '254791738417')
+        expect(result).to eq({ errors: "User not found with slug #254791738417"})
+      end
+
+      it "returns an object on finding user phone" do
+        result = helper.search_user_by_slug(users, '254791738418')
+        expect(result).to eq(users[0])
+      end
+    end
+
+    describe "#unique_email" do
+      let(:users) do
+        [
+          double(id: 1, email: 'aa@gmail.com'),
+          double(id: 2, email: 'bb@gmail.com')
+        ]
+      end
+
+      it "returns an error if email has been taken" do
+        result = helper.unique_email(users, 'aa@gmail.com', 3)
+        expect(result).to eq({ errors: "Email has been taken!"})
+      end
+
+      it "returns email param if nit has not been taken" do
+        result = helper.unique_email(users, 'cc@gmail.com', 3)
+        expect(result).to eq('cc@gmail.com')
+      end
+    end
 end
